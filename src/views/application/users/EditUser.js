@@ -103,14 +103,14 @@ function getStyles(name, personName, theme) {
 
 // ==============================|| PRODUCT ADD DIALOG ||============================== //
 
-const EditUser = ({ open, handleCloseDialog }) => {
+const EditUser = ({ open, handleCloseDialog, data }) => {
     const theme = useTheme();
 
-    const [username, setUserName] = useState('');
-    const [fullname, setFullName] = useState('');
+    const [username, setUserName] = data.username ? useState(data.username) :useState('');
+    const [fullname, setFullName] = data.firstname && data.lastname ? useState(`${data.firstname} ${data.lastname}`) : useState('');
     const [address, setAddress] = useState('');
     const [mobileno, setMobileNo] = useState('');
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = data.email ? useState(data.email) :useState('');
     const [gender, setGender] = useState('');
 
     const handleInputChange = (event) => {
@@ -147,7 +147,7 @@ const EditUser = ({ open, handleCloseDialog }) => {
         console.log(fullname);
         console.log(address);
         console.log(mobileno);
-        console.log(email);
+        console.log(email); 
         console.log(gender);
     }
 

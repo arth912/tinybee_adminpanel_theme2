@@ -1,4 +1,5 @@
 import React from 'react';
+import { format } from 'date-fns';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -68,7 +69,7 @@ const UserList = () => {
                     <TableRow>
                         <TableCell sx={{ pl: 3 }}>#</TableCell>
                         <TableCell>User Profile</TableCell>
-                        <TableCell>Location</TableCell>
+                        {/* <TableCell>Location</TableCell> */}
                         <TableCell>Order</TableCell>
                         <TableCell>Registered</TableCell>
                         <TableCell>Status</TableCell>
@@ -78,18 +79,18 @@ const UserList = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data &&
-                        data.map((row, index) => (
+                    {usersS1 &&
+                        usersS1.map((row, index) => (
                             <TableRow hover key={index}>
                                 <TableCell sx={{ pl: 3 }}>{row.id}</TableCell>
                                 <TableCell>
                                     <Grid container spacing={2} alignItems="center">
                                         <Grid item>
-                                            <Avatar alt="User 1" src={avatarImage(`./${row.avatar}`)} />
+                                            <Avatar alt="User 1" src={avatarImage(`./avatar-1.png`)} />
                                         </Grid>
                                         <Grid item xs zeroMinWidth>
                                             <Typography align="left" variant="subtitle1" component="div">
-                                                {row.name}{' '}
+                                                {row.firstname}{' '}
                                                 {/* {row.status === 'Active' && (
                                                     <CheckCircleIcon sx={{ color: 'success.dark', width: 14, height: 14 }} />
                                                 )} */}
@@ -100,11 +101,11 @@ const UserList = () => {
                                         </Grid>
                                     </Grid>
                                 </TableCell>
-                                <TableCell>{row.location}</TableCell>
-                                <TableCell>{row.friends}</TableCell>
-                                <TableCell>{row.followers}</TableCell>
+                                {/* <TableCell>{row.location}</TableCell> */}
+                                <TableCell>{row.ordered}</TableCell>
+                                <TableCell>{format(new Date(row.registered), 'E, MMM d yyyy')}</TableCell>
                                 <TableCell>
-                                    {row.status === 'Active' && (
+                                    {row.STATUS === 'Active' && (
                                         <Chip
                                             label="Active"
                                             size="small"
@@ -149,7 +150,7 @@ const UserList = () => {
                                                 <EditTwoToneIcon sx={{ fontSize: '1.3rem' }}
                                                     onClick={handleClickOpenDialog}
                                                 />
-                                                <EditUser open={open} handleCloseDialog={handleCloseDialog} />
+                                                <EditUser open={open} handleCloseDialog={handleCloseDialog} data = {row}/>
                                             </IconButton>
                                         </Tooltip>
                                     </Stack>

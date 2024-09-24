@@ -13,7 +13,8 @@ const initialState = {
     product: null,
     relatedProducts: [],
     reviews: [],
-    addresses: []
+    addresses: [],
+    categories: []
 };
 
 const slice = createSlice({
@@ -24,10 +25,17 @@ const slice = createSlice({
         hasError(state, action) {
             state.error = action.payload;
         },
-
+        addProductSuccess(state, action) {
+            state.product = action.payload;
+        },
         // GET PRODUCTS
         getProductsSuccess(state, action) {
             state.products = action.payload;
+        },
+
+        // GET CATEGORY LIST
+        getProductCategoryListSuccess(state, action) {
+            state.categories = action.payload;
         },
 
         // FILTER PRODUCTS
@@ -72,11 +80,35 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getProducts() {
+export function addProduct(data) {
     return async () => {
         try {
-            const response = await axios.get('/api/products/list');
-            dispatch(slice.actions.getProductsSuccess(response.data.products));
+            const response = await axios.post('/products/add',{data})
+            dispatch(slice.actions.addProductSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    }
+}
+
+export function getProducts(page, limit) {
+    return async () => {
+        try {
+            const response = await axios.post('/products/product-list', { page, limit });
+            // console.log(response.data.data.products);
+            dispatch(slice.actions.getProductsSuccess(response.data.data.products));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getCategories() {
+    return async () => {
+        try {
+            const response = await axios.get('/products/category-list');
+            console.log(response.data.data);
+            dispatch(slice.actions.getProductCategoryListSuccess(response.data.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }

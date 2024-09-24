@@ -241,16 +241,24 @@ const ProductList = () => {
     const [search, setSearch] = React.useState('');
     const [rows, setRows] = React.useState([]);
     const { products } = useSelector((state) => state.product);
-
     const [anchorEl, setAnchorEl] = React.useState(null);
+
 
     // show a right sidebar when clicked on new product
     const [open, setOpen] = React.useState(false);
+    const [openEditProduct, setOpenEditProduct] = React.useState(false);
     const handleClickOpenDialog = () => {
         setOpen(true);
     };
     const handleCloseDialog = () => {
         setOpen(false);
+    };
+
+    const handleClickOpenEditDialog = () => {
+        setOpenEditProduct(true);
+    };
+    const handleCloseEditDialog = () => {
+        setOpenEditProduct(false);
     };
 
     const handleMenuClick = (event) => {
@@ -262,9 +270,13 @@ const ProductList = () => {
     };
 
     React.useEffect(() => {
+        // dispatch(getProducts());
         setRows(products);
     }, [products]);
 
+    console.log(rows)
+
+    console.log("product list")
     React.useEffect(() => {
         dispatch(getProducts());
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -340,7 +352,7 @@ const ProductList = () => {
     };
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - products.length) : 0;
 
     return (
         <>
@@ -404,7 +416,7 @@ const ProductList = () => {
                         selected={selected}
                     />
                     <TableBody>
-                        {stableSort(rows, getComparator(order, orderBy))
+                        {stableSort(products, getComparator(order, orderBy))
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 if (typeof row === 'number') return null;
@@ -454,17 +466,17 @@ const ProductList = () => {
                                                     textDecoration: 'none'
                                                 }}
                                             >
-                                                {row.name}
+                                                {row.product_name}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>{format(new Date(row.created), 'E, MMM d yyyy')}</TableCell>
-                                        <TableCell align="right">${row.offerPrice}</TableCell>
+                                        <TableCell>{format(new Date(row.Created), 'E, MMM d yyyy')}</TableCell>
+                                        <TableCell align="right">${row.offerprice}</TableCell>
                                         <TableCell align="right">${row.salePrice}</TableCell>
                                         <TableCell align="center">
                                             <Chip
                                                 size="small"
-                                                label={row.isStock ? 'In Stock' : 'Out of Stock'}
-                                                chipcolor={row.isStock ? 'success' : 'error'}
+                                                label={row.is_stock ? 'In Stock' : 'Out of Stock'}
+                                                chipcolor={row.is_stock ? 'success' : 'error'}
                                                 sx={{ borderRadius: '4px', textTransform: 'capitalize' }}
                                             />
                                         </TableCell>
@@ -477,13 +489,16 @@ const ProductList = () => {
                                             {/* product add & dialog */}
                                             <Tooltip title="Edit Product">
                                                 <IconButton color="secondary"
-                                                    onClick={handleClickOpenDialog}
+                                                    onClick={handleClickOpenEditDialog}
                                                     size="large" aria-label="edit"
                                                 >
                                                     <EditTwoToneIcon sx={{ fontSize: '1.3rem' }} />
                                                 </IconButton>
                                             </Tooltip>
-                                            <ProductEdit open={open} handleCloseDialog={handleCloseDialog} />
+                                            <ProductEdit open={openEditProduct}
+                                                handleCloseDialog={handleCloseEditDialog}
+                                                data={row}
+                                            />
                                             <Tooltip placement="top" title="Block Product">
                                                 <IconButton
                                                     color="primary"

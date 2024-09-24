@@ -106,49 +106,22 @@ function getStyles(name, personName, theme) {
 const AddUser = ({ open, handleCloseDialog }) => {
     const theme = useTheme();
 
-    const [username, setUserName] = useState('');
-    const [fullname, setFullName] = useState('');
-    const [address, setAddress] = useState('');
-    const [mobileno, setMobileNo] = useState('');
-    const [email, setEmail] = useState('');
-    const [gender, setGender] = useState('');
-
+    const [addUserData, setAddUserData] = useState({
+        'username': '',
+        'fullname': '',
+        'address': '',
+        'mobileno': '',
+        'email': '',
+        'gender': ''
+    })
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-
-        // Update the state based on the field name
-        switch (name) {
-            case 'username':
-                setUserName(value);
-                break;
-            case 'fullname':
-                setFullName(value);
-                break;
-            case 'address':
-                setAddress(value);
-                break;
-            case 'mobileno':
-                setMobileNo(value);
-                break;
-            case 'gender':
-                setGender(value);
-                break;
-            case 'email':
-                setEmail(value);
-            default:
-                break;
-        }
+        setAddUserData({ ...addUserData, [name]: value })
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault()
-
-        console.log(username);
-        console.log(fullname);
-        console.log(address);
-        console.log(mobileno);
-        console.log(email);
-        console.log(gender);
+        event.preventDefault();
+        console.log(addUserData);
     }
 
     // handle category change dropdown
@@ -234,19 +207,19 @@ const AddUser = ({ open, handleCloseDialog }) => {
                                         fullWidth
                                         label="Enter User Name"
                                         name="username"
-                                        value={username}
+                                        value={addUserData.username}
                                         onChange={handleInputChange}
-                                        defaultValue="testuser123" />
+                                         />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         id="outlined-basic2"
                                         fullWidth
                                         name="fullname"
-                                        value={fullname}
+                                        value={addUserData.fullname}
                                         onChange={handleInputChange}
                                         label="Enter Full Name"
-                                        defaultValue="John Doe"
+                                        
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -256,36 +229,34 @@ const AddUser = ({ open, handleCloseDialog }) => {
                                         multiline
                                         rows={3}
                                         label="Enter Address"
-                                        value={address}
+                                        value={addUserData.address}
                                         name="address"
-                                        alue={username}
                                         onChange={handleInputChange}
-                                        defaultValue="926 Delbert Walks, Cordiemouth, DE 36796-5302"
+                                        
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField id="outlined-basic3" fullWidth label="Mobile No"
                                         name="mobileno"
-                                        value={mobileno}
+                                        value={addUserData.mobileno}
                                         onChange={handleInputChange}
-                                        defaultValue="8390590339" />
+                                        />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField id="outlined-basic4" fullWidth label="email"
                                         name="email"
-                                        value={email}
+                                        value={addUserData.email}
                                         onChange={handleInputChange}
-                                        defaultValue="johndoe@test.com" />
+                                       />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         id="standard-select-currency"
                                         select
                                         label="Select Gender"
-                                        value={gender}
+                                        value={addUserData.gender}
                                         fullWidth
-                                        onChange={handleSelectChange}
-                                        InputProps={"male"}
+                                        onChange={handleSelectChange}                                        
                                     // helperText="Please select Category"
                                     >
                                         {categories.map((option) => (

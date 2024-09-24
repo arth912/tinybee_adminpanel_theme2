@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { forwardRef, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'store';
+// import {  } from 'store/slices/product';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
@@ -26,6 +28,7 @@ import {
 
 // project imports
 import { gridSpacing } from 'store/constant';
+import { getCategories,addProduct } from 'store/slices/product'
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
 // assets
@@ -56,24 +59,24 @@ const ImageWrapper = styled('div')(({ theme }) => ({
 }));
 
 // product category options
-const categories = [
-    {
-        value: '1',
-        label: 'Iphone 12 Pro Max'
-    },
-    {
-        value: '2',
-        label: 'Iphone 11 Pro Max'
-    },
-    {
-        value: '3',
-        label: 'Nokia'
-    },
-    {
-        value: '4',
-        label: 'Samsung'
-    }
-];
+// const categories = [
+//     {
+//         value: '1',
+//         label: 'Iphone 12 Pro Max'
+//     },
+//     {
+//         value: '2',
+//         label: 'Iphone 11 Pro Max'
+//     },
+//     {
+//         value: '3',
+//         label: 'Nokia'
+//     },
+//     {
+//         value: '4',
+//         label: 'Samsung'
+//     }
+// ];
 
 // animation
 const Transition = forwardRef((props, ref) => <Slide direction="left" ref={ref} {...props} />);
@@ -105,35 +108,67 @@ function getStyles(name, personName, theme) {
 
 const ProductAdd = ({ open, handleCloseDialog }) => {
     const theme = useTheme();
-
-    // handle category change dropdown
-    const [currency, setCurrency] = useState('2');
-    const handleSelectChange = (event) => {
-        setCurrency(event?.target.value);
-    };
-    // set image upload progress
-    const [progress, setProgress] = useState(0);
-    const progressRef = useRef(() => {});
-    useEffect(() => {
-        progressRef.current = () => {
-            if (progress > 100) {
-                setProgress(0);
-            } else {
-                const diff = Math.random() * 10;
-                setProgress(progress + diff);
-            }
-        };
+    const dispatch = useDispatch();
+    // ['product_code', 'product_category', 'product_name', 'product_desc', 'price', 'product_dimension'];
+    const [addProductData, setAddProductData] = useState({
+        'product_name': '',
+        'product_desc': '',
+        'product_category': '',
+        'product_code': '',
+        'sales_price': '',
+        'offer_price': '',
+        'product_dimension': '',
+        'quantity': '',
+        'product_material': '',
+        'age_group': ''
     });
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            progressRef.current();
-        }, 500);
+    let { categories } = useSelector((state) => state.product)
+    // console.log(categories)
+    const handleInputChange = async (e) => {
+        const { name, value } = e.target;
+        setAddProductData({ ...addProductData, [name]: value })
+    }
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    const handleSubmitForm = async (e) => {
+        e.preventDefault()
+        console.log(addProductData)
+        dispatch(addProduct(addProductData))
+    }
+
+    useEffect(() => {
+        dispatch(getCategories())
+    }, [])
+
+    // handle category change dropdown
+    // const [currency, setCurrency] = useState('2');
+    // const handleSelectChange = (event) => {
+    //     setCurrency(event?.target.value);
+    // };
+    
+    // // set image upload progress
+    // const [progress, setProgress] = useState(0);
+    // const progressRef = useRef(() => { });
+    // useEffect(() => {
+    //     progressRef.current = () => {
+    //         if (progress > 100) {
+    //             setProgress(0);
+    //         } else {
+    //             const diff = Math.random() * 10;
+    //             setProgress(progress + diff);
+    //         }
+    //     };
+    // });
+
+    // useEffect(() => {
+    //     const timer = setInterval(() => {
+    //         progressRef.current();
+    //     }, 500);
+
+    //     return () => {
+    //         clearInterval(timer);
+    //     };
+    // }, []);
 
     // handle tag select
     const [personName, setPersonName] = useState([]);
@@ -160,11 +195,11 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
             }}
         >
             {open && (
-                <>
+                <form onSubmit={handleSubmitForm}>
                     <DialogTitle>Add Product</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-                        <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <Grid container spacing={1}>
                                     <Grid item xs={12}>
                                         <Typography variant="subtitle1" align="left">
@@ -238,9 +273,14 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
-                                <TextField id="outlined-basic1" fullWidth label="Enter Product Name*" defaultValue="Iphone 11 Pro Max" />
+                                <TextField id="outlined-basic1"
+                                    fullWidth
+                                    label="Enter Product Name*"
+                                    name="product_name"
+                                    value={addProductData.product_name}
+                                    onChange={handleInputChange} />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
@@ -248,8 +288,10 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
                                     fullWidth
                                     multiline
                                     rows={3}
-                                    label="Enter Product Name"
-                                    defaultValue="Fundamentally redesigned and engineered The Apple Watch display yet."
+                                    label="Enter Product Description"
+                                    name="product_desc"
+                                    value={addProductData.product_desc}
+                                    onChange={handleInputChange}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -257,101 +299,93 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
                                     id="standard-select-currency"
                                     select
                                     label="Select Category*"
-                                    value={currency}
                                     fullWidth
-                                    onChange={handleSelectChange}
+                                    name="product_category"
+                                    value={addProductData.product_category}
+                                    onChange={handleInputChange}
                                     helperText="Please select Category"
                                 >
                                     {categories.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
+                                        <MenuItem key={option.product_category} value={option.product_category}>
+                                            {option.product_category}
                                         </MenuItem>
                                     ))}
                                 </TextField>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField id="outlined-basic3" fullWidth label="Barcode*" defaultValue="8390590339828" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic4" fullWidth label="SKU*" defaultValue="H8J702729P" />
+                                <TextField id="outlined-basic3"
+                                    fullWidth
+                                    label="Product Code"
+                                    name="product_code"
+                                    value={addProductData.product_code}
+                                    onChange={handleInputChange} />
                             </Grid>
                             <Grid item md={6} xs={12}>
                                 <TextField
-                                    label="Price*"
+                                    label="Sales Price*"
                                     id="filled-start-adornment1"
-                                    value="399"
+                                    name="sales_price"
+                                    value={addProductData.sales_price}
+                                    onChange={handleInputChange}
                                     InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
                                 />
                             </Grid>
                             <Grid item md={6} xs={12}>
                                 <TextField
-                                    label="Discount"
+                                    label="Offer Price"
                                     id="filled-start-adornment2"
-                                    value="10"
-                                    InputProps={{ startAdornment: <InputAdornment position="start">%</InputAdornment> }}
+                                    name="offer_price"
+                                    value={addProductData.offer_price}
+                                    onChange={handleInputChange}
+                                    InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
                                 />
                             </Grid>
                             <Grid item md={6} xs={12}>
-                                <TextField type="number" id="outlined-basic5" fullWidth label="Quantity*" defaultValue="0" />
+                                <TextField type="number"
+                                    id="outlined-basic5"
+                                    fullWidth
+                                    label="Quantity*"
+                                    name="quantity"
+                                    value={addProductData.quantity}
+                                    onChange={handleInputChange} />
                             </Grid>
                             <Grid item md={6} xs={12}>
-                                <TextField id="outlined-basic6" fullWidth label="Brand*" defaultValue="Samsung" />
+                                <TextField id="outlined-basic6"
+                                    fullWidth
+                                    label="Material"
+                                    name="product_material"
+                                    value={addProductData.product_material}
+                                    onChange={handleInputChange} />
                             </Grid>
                             <Grid item md={6} xs={12}>
                                 <TextField
-                                    label="Weight"
-                                    value="0"
-                                    InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                                    label="Dimention"
+                                    name="product_dimension"
+                                    value={addProductData.product_dimension.replace('cm', '')}
+                                    onChange={handleInputChange}
+                                    InputProps={{ endAdornment: <InputAdornment position="end">cm</InputAdornment> }}
                                 />
                             </Grid>
                             <Grid item md={6} xs={12}>
-                                <TextField type="number" id="outlined-basic7" fullWidth label="Extra Shipping Free" defaultValue="0" />
+                                <TextField
+                                    id="outlined-basic7"
+                                    fullWidth
+                                    label="Age Group"
+                                    name="age_group"
+                                    value={addProductData.age_group}
+                                    onChange={handleInputChange} />
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Tags
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <Select
-                                                id="demo-multiple-chip"
-                                                multiple
-                                                fullWidth
-                                                value={personName}
-                                                onChange={handleTagSelectChange}
-                                                input={<Input id="select-multiple-chip" />}
-                                                renderValue={(selected) => (
-                                                    <div>
-                                                        {typeof selected !== 'string' &&
-                                                            selected.map((value) => <Chip key={value} label={value} />)}
-                                                    </div>
-                                                )}
-                                                MenuProps={MenuProps}
-                                            >
-                                                {tagNames.map((name) => (
-                                                    <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                                                        {name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Grid> */}
                         </Grid>
                     </DialogContent>
                     <DialogActions>
                         <AnimateButton>
-                            <Button variant="contained">Add Product</Button>
+                            <Button type="submit" variant="contained" >Save</Button>
                         </AnimateButton>
                         <Button variant="text" color="error" onClick={handleCloseDialog}>
                             Close
                         </Button>
                     </DialogActions>
-                </>
+                </form>
             )}
         </Dialog>
     );

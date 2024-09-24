@@ -147,11 +147,12 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getUsersListStyle1() {
+export function getUsersListStyle1(page,limit) {
     return async () => {
         try {
-            const response = await axios.get('/api/user-list/s1/list');
-            dispatch(slice.actions.getUsersListStyle1Success(response.data.users_s1));
+            const response = await axios.post('/user-list',{page,limit});
+            console.log(response.data.data.users)
+            dispatch(slice.actions.getUsersListStyle1Success(response.data.data.users));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }
